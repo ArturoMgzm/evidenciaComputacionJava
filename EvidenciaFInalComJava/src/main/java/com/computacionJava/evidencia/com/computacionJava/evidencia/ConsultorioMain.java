@@ -6,12 +6,8 @@
 package com.computacionJava.evidencia.com.computacionJava.evidencia;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -27,6 +23,7 @@ public class ConsultorioMain {
 
     public static List<Usuario> usuarios;
     public static List<Cita> citas = new ArrayList();
+    public static List<Medico> doctores = new ArrayList();
 
     public static void main(String[] args) throws IOException {
         boolean existeUsuario;
@@ -44,6 +41,7 @@ public class ConsultorioMain {
         if (existeUsuario) {
             System.out.println("existe el usuario");
             cargarCita();
+            cargarMedicos();
             menu();
 
         } else {
@@ -88,6 +86,9 @@ public class ConsultorioMain {
             opcion = opcionScanner.nextInt();
 
             switch (opcion) {
+                case 1:
+                    crearDoctor();
+                    break;
                 case 7:
                     crearCita();
                     break;
@@ -108,7 +109,7 @@ public class ConsultorioMain {
             ObjectMapper mapper = new ObjectMapper();
             String json = mapper.writeValueAsString(citas);
             System.out.println(json);
-            String ruta = "citas.json";
+            String ruta = "db/citas.json";
 
             File file = new File(ruta);
             // Si el archivo no existe es creado
@@ -122,20 +123,54 @@ public class ConsultorioMain {
         } catch (Exception e) {
             System.out.println("Error->" + e.getMessage());
         }
-
-        /*Guardar variable*/
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            String json = mapper.writeValueAsString(doctores);
+            System.out.println(json);
+            String ruta = "db/medicos.json";
+            try{
+                File file = new File(ruta);
+                // Si el archivo no existe es creado
+                if (!file.exists()) {
+                    file.createNewFile();
+                }
+                FileWriter fw = new FileWriter(file);
+                BufferedWriter bw = new BufferedWriter(fw);
+                bw.write(json);
+                bw.close();
+            }
+            catch (Exception e){
+                System.out.println("Error->" + e.getMessage());
+            }
+        } catch (Exception e) {
+            System.out.println("Error->" + e.getMessage());
+        }
     }
 
     public static void cargarCita() throws IOException {
-        String json = leerArchivo();
+        String json = leerArchivoCitas();
         Gson gson = new Gson();
         Cita[] cita = gson.fromJson(json, Cita[].class);
         //citas.add(cita);
         //System.out.println("nombre del paciente:" + cita.getPaciente().getNombre());
-        for (Cita temp : cita) {
-            citas.add(temp);
+        if(cita != null){
+            for (Cita temp : cita) {
+                citas.add(temp);
+            }
         }
-        System.out.println("Hola mundo");
+    }
+
+    public static void cargarMedicos() throws IOException {
+        String json = leerArchivoMedicos();
+        Gson gson = new Gson();
+        Medico[] medico = gson.fromJson(json, Medico[].class);
+        //citas.add(cita);
+        //System.out.println("nombre del paciente:" + cita.getPaciente().getNombre());
+        if(medico != null){
+            for (Medico temp : medico) {
+                doctores.add(temp);
+            }
+        }
     }
 
     public static void imprimirTodasCitas() {
@@ -166,17 +201,60 @@ public class ConsultorioMain {
         citas.add(cita);
     }
 
-    public static String leerArchivo() throws IOException {
-        String archivo = "citas.json";
-        FileReader f = new FileReader(archivo);
-        BufferedReader b = new BufferedReader(f);
-        StringBuilder json = new StringBuilder();
-        String cadena;
-        while ((cadena = b.readLine()) != null) {
-            json.append(cadena);
+    public static void crearDoctor(){
+        Medico medico = new Medico();
+        String nombre;
+        String especialidad;
+        try {
+            System.out.println("Ingrese el nombre del medico");
+            InputStreamReader streamReader = new InputStreamReader(System.in);
+            BufferedReader bufferedReader = new BufferedReader(streamReader);
+            nombre = bufferedReader.readLine();
+            System.out.println("Ingrese la especialidad del medico");
+            especialidad = bufferedReader.readLine();
+            medico.setEspecialida(especialidad);
+            medico.setNombre(nombre);
+            medico.setId(doctores.size()+1);
+            doctores.add(medico);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        b.close();
-        return json.toString();
+    }
+
+    public static String leerArchivoCitas() throws IOException {
+        String archivo = "db/citas.json";
+        try{
+            FileReader f = new FileReader(archivo);
+            BufferedReader b = new BufferedReader(f);
+            StringBuilder json = new StringBuilder();
+            String cadena;
+            while ((cadena = b.readLine()) != null) {
+                json.append(cadena);
+            }
+            b.close();
+            return json.toString();
+        }catch(Exception e){
+            System.out.println("Error->" + e.getMessage());
+            return null;
+        }
+    }
+
+    public static String leerArchivoMedicos() throws IOException {
+        String archivo = "db/medicos.json";
+        try{
+            FileReader f = new FileReader(archivo);
+            BufferedReader b = new BufferedReader(f);
+            StringBuilder json = new StringBuilder();
+            String cadena;
+            while ((cadena = b.readLine()) != null) {
+                json.append(cadena);
+            }
+            b.close();
+            return json.toString();
+        }catch(Exception e){
+            System.out.println("Error->" + e.getMessage());
+            return null;
+        }
     }
 
 }
