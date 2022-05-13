@@ -43,6 +43,7 @@ public class ConsultorioMain {
             System.out.println("existe el usuario");
             cargarCita();
             cargarMedicos();
+            cargarPacientes();
             menu();
 
         } else {
@@ -71,18 +72,17 @@ public class ConsultorioMain {
 
     public static void menu() {
         Integer opcion = -1;
-        while (opcion != 0) {
+        while (opcion != 8) {
 
             Scanner opcionScanner = new Scanner(System.in);
             System.out.println("1.-Dar de alta a medico\n"
                     + "2.-Dar de alta a un paciente\n"
-                    + "4.Ver las citas de todos los medicos\n"
-                    + "5.-Ver las citas por nombre del medico\n"
-                    + "6.-Ver las citas por nombre del paciente\n"
-                    + "7.-Crear cita\n"
-                    + "8.-ver todas las citas\n"
-                    + "9.-Guardar\n"
-                    + "0.-Salir");
+                    + "3.Ver las citas de todos los medicos\n"
+                    + "4.-Ver las citas por nombre del medico\n"
+                    + "5.-Ver las citas por nombre del paciente\n"
+                    + "6.-Crear cita\n"
+                    + "7.-Guardar\n"
+                    + "8.-Salir");
             System.out.println("Opción:");
             opcion = opcionScanner.nextInt();
 
@@ -93,15 +93,27 @@ public class ConsultorioMain {
                 case 2:
                     crearPaciente();
                     break;
-                case 7:
-                    crearCita();
-                    break;
-                case 8:
+                case 3:
                     imprimirTodasCitas();
                     break;
-                case 9:
+                case 4:
+                    imprimirCitasDoctor();
+                    break;
+                case 5:
+                    imprimirCitasPaciente();
+                    break;
+                case 6:
+                    crearCita();
+                    break;
+                case 7:
                     save();
                     break;
+                case 8:
+                    break;
+                default:
+                    System.out.println("Opción no reconocida");
+                    break;
+
 
             }
         }
@@ -210,6 +222,52 @@ public class ConsultorioMain {
                 pacientes.add(temp);
             }
         }
+    }
+
+    public static void imprimirCitasDoctor(){
+        Medico doctor = new Medico();
+        doctor = seleccionarMedico();
+        boolean tieneCitas = false;
+        if(doctor == null){
+            System.out.println("Medico no reconocido");
+            return;
+        }
+        for (Cita cita : citas) {
+            if(doctor.getId() == cita.getMedico().getId()){
+                tieneCitas = true;
+                System.out.println("---------------------------------------------------");
+                System.out.println("Nombre cita:" + cita.getNombreCita());
+                System.out.println("Nombre paciente:" + cita.getPaciente().getNombre());
+                System.out.println("Nombre medico:" + cita.getMedico().getNombre());
+                System.out.println("Fecha:" + cita.getFecha());
+                System.out.println("Hora:" + cita.getHora());
+            }
+        }
+        if(tieneCitas)
+            System.out.println("---------------------------------------------------");
+    }
+
+    public static void imprimirCitasPaciente(){
+        Paciente paciente = new Paciente();
+        paciente = seleccionarPaciente();
+        boolean tieneCitas = false;
+        if(paciente == null){
+            System.out.println("Paciente no reconocido");
+            return;
+        }
+        for (Cita cita : citas) {
+            if(paciente.getId() == cita.getPaciente().getId()){
+                tieneCitas = true;
+                System.out.println("---------------------------------------------------");
+                System.out.println("Nombre cita:" + cita.getNombreCita());
+                System.out.println("Nombre paciente:" + cita.getPaciente().getNombre());
+                System.out.println("Nombre medico:" + cita.getMedico().getNombre());
+                System.out.println("Fecha:" + cita.getFecha());
+                System.out.println("Hora:" + cita.getHora());
+            }
+        }
+        if(tieneCitas)
+            System.out.println("---------------------------------------------------");
     }
 
     public static void imprimirTodasCitas() {
