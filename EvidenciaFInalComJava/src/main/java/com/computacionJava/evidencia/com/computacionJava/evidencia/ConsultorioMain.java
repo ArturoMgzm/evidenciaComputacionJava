@@ -40,7 +40,6 @@ public class ConsultorioMain {
         contrasena = credenciales.nextLine();
         existeUsuario = validarCredenciales(usuario, contrasena);
         if (existeUsuario) {
-            System.out.println("existe el usuario");
             cargarCita();
             cargarMedicos();
             cargarPacientes();
@@ -48,20 +47,29 @@ public class ConsultorioMain {
 
         } else {
             System.out.println("el usuario no existe");
+            System.out.println("abandonando sistema");
         }
 
     }
 
-    public static void cargarUsuarios() {
+    public static void cargarUsuarios() throws IOException{
 
         if (usuarios == null) {
             usuarios = new ArrayList<>();
         }
 
-        usuarios.add(new Usuario(1, "carlos", "1234"));
-        usuarios.add(new Usuario(2, "sofia", "1234"));
-        usuarios.add(new Usuario(2, "ithan", "0000"));
-        usuarios.add(new Usuario(2, "alfredo", "0000"));
+        usuarios.add(new Usuario(1, "System", "9130"));
+
+        String json = leerArchivoUsuarios();
+        Gson gson = new Gson();
+        Usuario[] usuario = gson.fromJson(json, Usuario[].class);
+        //citas.add(cita);
+        //System.out.println("nombre del paciente:" + cita.getPaciente().getNombre());
+        if(usuario != null){
+            for (Usuario temp : usuario) {
+                usuarios.add(temp);
+            }
+        }
         System.out.println("Los usuarios han sido cargados: " + usuarios.size());
 
     }
@@ -72,7 +80,7 @@ public class ConsultorioMain {
 
     public static void menu() {
         Integer opcion = -1;
-        while (opcion != 8) {
+        while (opcion != 9) {
 
             Scanner opcionScanner = new Scanner(System.in);
             System.out.println("1.-Dar de alta a medico\n"
@@ -82,7 +90,8 @@ public class ConsultorioMain {
                     + "5.-Ver las citas por nombre del paciente\n"
                     + "6.-Crear cita\n"
                     + "7.-Guardar\n"
-                    + "8.-Salir");
+                    + "8.-Crear usuario administrador\n"
+                    + "9.-Salir");
             System.out.println("Opción:");
             opcion = opcionScanner.nextInt();
 
@@ -109,6 +118,9 @@ public class ConsultorioMain {
                     save();
                     break;
                 case 8:
+                    crearUsuario();
+                    break;
+                case 9:
                     break;
                 default:
                     System.out.println("Opción no reconocida");
@@ -166,6 +178,30 @@ public class ConsultorioMain {
             String json = mapper.writeValueAsString(pacientes);
             System.out.println(json);
             String ruta = "db/pacientes.json";
+            try{
+                File file = new File(ruta);
+                // Si el archivo no existe es creado
+                if (!file.exists()) {
+                    file.createNewFile();
+                }
+                FileWriter fw = new FileWriter(file);
+                BufferedWriter bw = new BufferedWriter(fw);
+                bw.write(json);
+                bw.close();
+            }
+            catch (Exception e){
+                System.out.println("Error->" + e.getMessage());
+            }
+        } catch (Exception e) {
+            System.out.println("Error->" + e.getMessage());
+        }
+        try {
+            List<Usuario> tempUsuarios = usuarios;
+            tempUsuarios.remove(0);
+            ObjectMapper mapper = new ObjectMapper();
+            String json = mapper.writeValueAsString(tempUsuarios);
+            System.out.println(json);
+            String ruta = "db/usuarios.json";
             try{
                 File file = new File(ruta);
                 // Si el archivo no existe es creado
@@ -422,6 +458,26 @@ public class ConsultorioMain {
         }
     }
 
+    public static void crearUsuario(){
+        Usuario admin = new Usuario();
+        String nombre;
+        String password;
+        try {
+            System.out.println("Ingrese el nombre del usuario");
+            InputStreamReader streamReader = new InputStreamReader(System.in);
+            BufferedReader bufferedReader = new BufferedReader(streamReader);
+            nombre = bufferedReader.readLine();
+            System.out.println("Ingrese la contraseña del usuario");
+            password = bufferedReader.readLine();
+            admin.setContrasena(password);
+            admin.setNombre(nombre);
+            admin.setId(usuarios.size()+1);
+            usuarios.add(admin);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static String leerArchivoCitas() throws IOException {
         String archivo = "db/citas.json";
         try{
@@ -460,6 +516,24 @@ public class ConsultorioMain {
 
     public static String leerArchivoPacientes() throws IOException {
         String archivo = "db/pacientes.json";
+        try{
+            FileReader f = new FileReader(archivo);
+            BufferedReader b = new BufferedReader(f);
+            StringBuilder json = new StringBuilder();
+            String cadena;
+            while ((cadena = b.readLine()) != null) {
+                json.append(cadena);
+            }
+            b.close();
+            return json.toString();
+        }catch(Exception e){
+            System.out.println("Error->" + e.getMessage());
+            return null;
+        }
+    }
+
+    public static String leerArchivoUsuarios() throws IOException {
+        String archivo = "db/usuarios.json";
         try{
             FileReader f = new FileReader(archivo);
             BufferedReader b = new BufferedReader(f);
