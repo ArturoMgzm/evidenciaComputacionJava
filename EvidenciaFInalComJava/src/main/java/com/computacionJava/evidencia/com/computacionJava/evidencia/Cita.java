@@ -8,6 +8,8 @@ package com.computacionJava.evidencia.com.computacionJava.evidencia;
 import java.util.Date;
 
 /**
+ * tomado del proyecto base
+ * editado por Arturo Manrique Garza
  *
  * @author jajimenez
  */
