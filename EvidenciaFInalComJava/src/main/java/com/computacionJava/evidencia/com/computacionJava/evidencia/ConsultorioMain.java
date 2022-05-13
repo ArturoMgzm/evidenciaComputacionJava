@@ -4,11 +4,6 @@
  * and open the template in the editor.
  */
 package com.computacionJava.evidencia.com.computacionJava.evidencia;
-
-import com.computacionJava.evidencia.Cita;
-import com.computacionJava.evidencia.Medico;
-import com.computacionJava.evidencia.Paciente;
-import com.computacionJava.evidencia.Usuario;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import java.io.BufferedReader;

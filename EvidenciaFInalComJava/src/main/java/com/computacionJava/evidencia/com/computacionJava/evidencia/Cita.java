@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.computacionJava.evidencia;
+package com.computacionJava.evidencia.com.computacionJava.evidencia;
 
 import java.util.Date;
 
