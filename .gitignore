@@ -1,3 +1,4 @@
+
 #Utilizando la plantilla de github para proyectos de Java
 
 # Compiled class file
@@ -26,3 +27,5 @@ hs_err_pid*
 
 #archivos .swp
 *.swp
+/target
+db/
