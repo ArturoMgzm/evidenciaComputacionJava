@@ -24,6 +24,7 @@ public class ConsultorioMain {
     public static List<Usuario> usuarios;
     public static List<Cita> citas = new ArrayList();
     public static List<Medico> doctores = new ArrayList();
+    public static List<Paciente> pacientes = new ArrayList();
 
     public static void main(String[] args) throws IOException {
         boolean existeUsuario;
@@ -89,6 +90,9 @@ public class ConsultorioMain {
                 case 1:
                     crearDoctor();
                     break;
+                case 2:
+                    crearPaciente();
+                    break;
                 case 7:
                     crearCita();
                     break;
@@ -145,6 +149,28 @@ public class ConsultorioMain {
         } catch (Exception e) {
             System.out.println("Error->" + e.getMessage());
         }
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            String json = mapper.writeValueAsString(pacientes);
+            System.out.println(json);
+            String ruta = "db/pacientes.json";
+            try{
+                File file = new File(ruta);
+                // Si el archivo no existe es creado
+                if (!file.exists()) {
+                    file.createNewFile();
+                }
+                FileWriter fw = new FileWriter(file);
+                BufferedWriter bw = new BufferedWriter(fw);
+                bw.write(json);
+                bw.close();
+            }
+            catch (Exception e){
+                System.out.println("Error->" + e.getMessage());
+            }
+        } catch (Exception e) {
+            System.out.println("Error->" + e.getMessage());
+        }
     }
 
     public static void cargarCita() throws IOException {
@@ -169,6 +195,19 @@ public class ConsultorioMain {
         if(medico != null){
             for (Medico temp : medico) {
                 doctores.add(temp);
+            }
+        }
+    }
+
+    public static void cargarPacientes() throws IOException {
+        String json = leerArchivoPacientes();
+        Gson gson = new Gson();
+        Paciente[] paciente = gson.fromJson(json, Paciente[].class);
+        //citas.add(cita);
+        //System.out.println("nombre del paciente:" + cita.getPaciente().getNombre());
+        if(paciente != null){
+            for (Paciente temp : paciente) {
+                pacientes.add(temp);
             }
         }
     }
@@ -221,6 +260,22 @@ public class ConsultorioMain {
         }
     }
 
+    public static void crearPaciente(){
+        Paciente paciente = new Paciente();
+        String nombre;
+        try {
+            System.out.println("Ingrese el nombre del paciente");
+            InputStreamReader streamReader = new InputStreamReader(System.in);
+            BufferedReader bufferedReader = new BufferedReader(streamReader);
+            nombre = bufferedReader.readLine();
+            paciente.setNombre(nombre);
+            paciente.setId(pacientes.size()+1);
+            pacientes.add(paciente);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static String leerArchivoCitas() throws IOException {
         String archivo = "db/citas.json";
         try{
@@ -241,6 +296,24 @@ public class ConsultorioMain {
 
     public static String leerArchivoMedicos() throws IOException {
         String archivo = "db/medicos.json";
+        try{
+            FileReader f = new FileReader(archivo);
+            BufferedReader b = new BufferedReader(f);
+            StringBuilder json = new StringBuilder();
+            String cadena;
+            while ((cadena = b.readLine()) != null) {
+                json.append(cadena);
+            }
+            b.close();
+            return json.toString();
+        }catch(Exception e){
+            System.out.println("Error->" + e.getMessage());
+            return null;
+        }
+    }
+
+    public static String leerArchivoPacientes() throws IOException {
+        String archivo = "db/pacientes.json";
         try{
             FileReader f = new FileReader(archivo);
             BufferedReader b = new BufferedReader(f);
