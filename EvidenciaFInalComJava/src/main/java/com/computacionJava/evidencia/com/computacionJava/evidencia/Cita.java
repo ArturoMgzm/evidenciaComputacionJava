@@ -16,6 +16,7 @@ public class Cita {
     private Integer id;
     private String nombreCita;
     private String fecha;
+    private String hora;
     private Medico medico;
     private Paciente paciente;
 
@@ -41,6 +42,14 @@ public class Cita {
 
     public void setFecha(String fecha) {
         this.fecha = fecha;
+    }
+
+    public String getHora() {
+        return hora;
+    }
+
+    public void setHora(String hora) {
+        this.hora = hora;
     }
 
     public Medico getMedico() {

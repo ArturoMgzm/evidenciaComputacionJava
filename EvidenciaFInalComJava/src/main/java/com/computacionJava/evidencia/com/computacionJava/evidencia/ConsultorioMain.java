@@ -218,26 +218,114 @@ public class ConsultorioMain {
             System.out.println("Nombre cita:" + cita.getNombreCita());
             System.out.println("Nombre paciente:" + cita.getPaciente().getNombre());
             System.out.println("Nombre medico:" + cita.getMedico().getNombre());
+            System.out.println("Fecha:" + cita.getFecha());
+            System.out.println("Hora:" + cita.getHora());
+        }
+        if(citas.size()!=0)
+            System.out.println("---------------------------------------------------");
+    }
+
+    public static Medico seleccionarMedico(){
+        String id;
+        if(doctores.size() == 0)
+            return null;
+        try {
+            InputStreamReader streamReader = new InputStreamReader(System.in);
+            BufferedReader bufferedReader = new BufferedReader(streamReader);
+
+            System.out.println("Información de todos los medicos");
+            System.out.println();
+
+            for (int i=0;i<doctores.size();i++) {
+                System.out.println("Id: " + doctores.get(i).getId());
+                System.out.println("Nombre: " + doctores.get(i).getNombre());
+                System.out.println("Especialidad: " + doctores.get(i).getEspecialida());
+                System.out.println();
+            }
+            System.out.println("Ingrese el id del medico que desea");
+            id = bufferedReader.readLine();
+            for (int i=0;i<doctores.size();i++) {
+                if(Integer.parseInt(id) == doctores.get(i).getId()){
+                    return doctores.get(i);
+                }
+            }
+            System.out.println("Medico no reconocido");
+            return null;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static Paciente seleccionarPaciente(){
+        String id;
+        if(pacientes.size() == 0)
+            return null;
+        try {
+            InputStreamReader streamReader = new InputStreamReader(System.in);
+            BufferedReader bufferedReader = new BufferedReader(streamReader);
+
+            System.out.println("Información de todos los pacientes");
+            System.out.println();
+
+            for (int i=0;i<pacientes.size();i++) {
+                System.out.println("Id: " + pacientes.get(i).getId());
+                System.out.println("Nombre: " + pacientes.get(i).getNombre());
+                System.out.println();
+            }
+            System.out.println("Ingrese el id del paciente que desea");
+            id = bufferedReader.readLine();
+            for (int i=0;i<pacientes.size();i++) {
+                if(Integer.parseInt(id) == pacientes.get(i).getId()){
+                    return pacientes.get(i);
+                }
+            }
+            System.out.println("Paciente no reconocido");
+            return null;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 
     public static void crearCita() {
-
+        String fecha;
+        String hora;
+        String razon;
         Cita cita = new Cita();
         Medico medico = new Medico();
         Paciente paciente = new Paciente();
-        medico.setId(1);
-        medico.setNombre("Salvador");
-        medico.setEspecialida("General");
-        paciente.setId(1);
-        paciente.setNombre("Maria");
-        cita.setId(1);
-        cita.setNombreCita("Cita numero 1");
-        cita.setMedico(medico);
-        cita.setPaciente(paciente);
-        cita.setFecha("24/11/2021");
-        //save(cita);
-        citas.add(cita);
+        try {
+            System.out.println("Seleccione el medico");
+            medico = seleccionarMedico();
+            if(medico == null){
+                System.out.println("regresando al menu principal");
+                return;
+            }
+            System.out.println("Seleccione el paciente");
+            paciente = seleccionarPaciente();
+            if(paciente == null){
+                System.out.println("regresando al menu principal");
+                return;
+            }
+            System.out.println("Ingrese la fecha de la cita");
+            InputStreamReader streamReader = new InputStreamReader(System.in);
+            BufferedReader bufferedReader = new BufferedReader(streamReader);
+            fecha = bufferedReader.readLine();
+            System.out.println("Ingrese la hora de la cita");
+            hora = bufferedReader.readLine();
+            System.out.println("Ingrese la razon de la cita");
+            razon = bufferedReader.readLine();
+            cita.setId(citas.size()+1);
+            cita.setNombreCita(razon);
+            cita.setPaciente(paciente);
+            cita.setMedico(medico);
+            cita.setFecha(fecha);
+            cita.setHora(hora);
+            citas.add(cita);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void crearDoctor(){
